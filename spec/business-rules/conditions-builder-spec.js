@@ -9,15 +9,23 @@ describe('$.fn.conditionsBuilder', function() {
             { "name": "expiration_days",
               "label": "Days until expiration",
               "field_type": "numeric",
-              "options": []},
+              "options": [],
+              "params": []},
             { "name": "current_month",
               "label": "Current Month",
               "field_type": "string",
-              "options": []},
+              "options": [],
+              "params": []},
             { "name": "goes_well_with",
               "label": "Goes Well With",
               "field_type": "select",
-              "options": ["Eggnog", "Cookies", "Beef Jerkey"]}
+              "options": ["Eggnog", "Cookies", "Beef Jerkey"],
+              "params": []},
+            { "name": "orders_sold_in_last_x_days",
+              "label": "Orders Sold In Last X Days",
+              "field_type": "numeric",
+              "options": [],
+              "params": [{"field_type": "numeric", "name": "days", "label": "Days"}]}
       ],
       variable_type_operators: {
             "numeric": [ {"name": "equal_to",
@@ -42,33 +50,46 @@ describe('$.fn.conditionsBuilder', function() {
                           "label": "Does Not Contain",
                           "input_type": "select"}]
       },
-      data: {"all": [
-        {name: "expiration_days", operator: "greater_than", value: 3},
-        {name: "current_month", operator: "equal_to", value: "December"}
-      ]}
+      data: {
+            "all": [ {"name": "expiration_days",
+                      "operator": "greater_than",
+                      "value": 3},
+                     {"name": "current_month",
+                      "operator": "equal_to",
+                      "value": "December"},
+                     {"name": "orders_sold_in_last_x_days",
+                      "operator": "greater_than",
+                      "value": 10,
+                      "params": {"days":5}}]
+      }
     });
     rules = container.find(".all .rule");
   });
 
   it('adds a condition row for each data point', function() {
-    expect(rules.length).toEqual(2);
+    expect(rules.length).toEqual(3);
     expect(rules.eq(0).find("select.field").val()).toEqual("expiration_days");
     expect(rules.eq(0).find("select.operator").val()).toEqual("greater_than");
     expect(rules.eq(0).find("input.value").val()).toEqual('3');
     expect(rules.eq(1).find("select.field").val()).toEqual("current_month");
     expect(rules.eq(1).find("select.operator").val()).toEqual("equal_to");
     expect(rules.eq(1).find("input.value").val()).toEqual("December");
+    expect(rules.eq(2).find("select.field").val()).toEqual("orders_sold_in_last_x_days");
+    expect(rules.eq(2).find("select.operator").val()).toEqual("greater_than");
+    expect(rules.eq(2).find("input.value").val()).toEqual("10");
+    expect(rules.eq(2).find(".subfields .field input").attr("name")).toEqual("days");
+    expect(rules.eq(2).find(".subfields .field input").val()).toEqual("5");
   });
 
   it('gives each row a remove link', function() {
     rules.eq(0).find(".remove").click();
-    expect(container.find(".all .rule").length).toEqual(1);
+    expect(container.find(".all .rule").length).toEqual(2);
   });
 
   it('adds an "Add Rule" link', function() {
     var addLink = container.find(".add-rule");
     addLink.click();
-    expect(container.find(".all .rule").length).toEqual(3);
+    expect(container.find(".all .rule").length).toEqual(4);
   });
 
   it('denormalizes the response from the server', function() {
@@ -94,7 +115,8 @@ describe('$.fn.conditionsBuilder', function() {
       rules.eq(0).find("input.value").val("4");
       expect(container.conditionsBuilder("data")).toEqual({"all":[
         {name: "expiration_days", operator: "greater_than", value: 4},
-        {name: "current_month", operator: "equal_to", value: "December"}
+        {name: "current_month", operator: "equal_to", value: "December"},
+        {name: "orders_sold_in_last_x_days", operator: "greater_than", value: 10, "params": {"days": 5}}
       ]});
     });
   });

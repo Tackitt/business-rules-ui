@@ -52,7 +52,7 @@
   margin: 10px 0;
 }
 
-.action .subfields, .action .subfields .field {
+.subfields, .subfields .field {
   display: inline;
 }
 
