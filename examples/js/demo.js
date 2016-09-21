@@ -81,10 +81,9 @@ var conditions, actions, nameField, ageField, occupationField, submit, allData;
 
     submit.click(function(e) {
       e.preventDefault();
-      console.log("CONDITIONS");
-      console.log(JSON.stringify(conditions.conditionsBuilder("data")));
-      console.log("ACTIONS");
-      console.log(JSON.stringify(actions.actionsBuilder("data")));
+      var rule = {conditions: conditions.conditionsBuilder("data"), actions: actions.actionsBuilder("data")};
+      var rules = [rule];
+      console.log(JSON.stringify(rules, null, 2));
     });
   }
   $(onReady);
